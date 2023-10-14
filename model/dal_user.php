@@ -32,5 +32,5 @@
 		}
 	}
 
-	echo "welcome to show again";
+	echo "welcome to show again nothing to worried about";
 ?>
