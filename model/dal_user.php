@@ -31,4 +31,6 @@
 			mysqli_close($this->connection);
 		}
 	}
+
+	echo "welcome to show";
 ?>
