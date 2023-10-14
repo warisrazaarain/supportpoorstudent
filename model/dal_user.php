@@ -32,5 +32,5 @@
 		}
 	}
 
-	echo "welcome to show";
+	echo "welcome to show again";
 ?>
