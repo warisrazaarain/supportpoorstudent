@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemadesigner version="6.5">
+<source>
+<database charset="utf8mb4" collation="utf8mb4_general_ci">support_poor_students</database>
+</source>
+<canvas zoom="100">
+<tables>
+<table name="academic_degree" view="standard">
+<left>59</left>
+<top>359</top>
+<width>262</width>
+<height>146</height>
+<sql_create_table>CREATE TABLE `academic_degree` (
+  `academic_degree_id` int(11) NOT NULL AUTO_INCREMENT,
+  `degree_title` varchar(50) DEFAULT NULL,
+  `created_at` date DEFAULT NULL,
+  `updated_at` date DEFAULT NULL,
+  PRIMARY KEY (`academic_degree_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4</sql_create_table>
+</table>
+<table name="academic_degree_attachment" view="standard">
+<left>138</left>
+<top>10</top>
+<width>284</width>
+<height>163</height>
+<sql_create_table>CREATE TABLE `academic_degree_attachment` (
+  `academic_degree_attachment_id` int(11) NOT NULL AUTO_INCREMENT,
+  `beneficiary_id` int(11) DEFAULT NULL,
+  `academic_degree_attachment` text DEFAULT NULL,
+  `created_at` date DEFAULT NULL,
+  `updated_at` date DEFAULT NULL,
+  PRIMARY KEY (`academic_degree_attachment_id`),
+  KEY `beneficiary_id` (`beneficiary_id`),
+  CONSTRAINT `academic_degree_attachment_ibfk_1` FOREIGN KEY (`beneficiary_id`) REFERENCES `beneficiary` (`beneficiary_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8mb4</sql_create_table>
+</table>
+<table name="beneficiary" view="standard">
+<left>448</left>
+<top>342</top>
+<width>371</width>
+<height>1063</height>
+<sql_create_table>CREATE TABLE `beneficiary` (
+  `beneficiary_id` int(11) NOT NULL AUTO_INCREMENT,
+  `academic_degree_id` int(11) DEFAULT NULL,
+  `applicant_first_name` varchar(25) NOT NULL,
+  `applicant_middle_name` varchar(25) NOT NULL,
+  `applicant_last_name` varchar(25) DEFAULT NULL,
+  `applicant_gender` enum('Male','Female') NOT NULL,
+  `applicant_contact_number` varchar(25) NOT NULL,
+  `applicant_email` varchar(50) DEFAULT NULL,
+  `applicant_date_of_birth` date NOT NULL,
+  `applicant_cnic` varchar(25) DEFAULT NULL,
+  `applicant_current_address` text DEFAULT NULL,
+  `applicant_permanent_address` text DEFAULT NULL,
+  `applicant_picture` text DEFAULT NULL,
+  `applicant_student_id_card_image` text DEFAULT NULL,
+  `applicant_apply_for_stipend` enum('Yes','No') DEFAULT 'Yes',
+  `applicant_eligible_receive_zakat` enum('Yes','No') DEFAULT NULL,
+  `applicant_reason_receive_zakat` text DEFAULT NULL,
+  `is_father_alive` enum('Yes','No') DEFAULT NULL,
+  `father_death_certificate_image` text DEFAULT NULL,
+  `father_cnic` varchar(25) DEFAULT NULL,
+  `applicant_cnic_image` text DEFAULT NULL,
+  `father_first_name` varchar(25) DEFAULT NULL,
+  `father_middle_name` varchar(25) DEFAULT NULL,
+  `father_last_name` varchar(25) DEFAULT NULL,
+  `father_occupation` varchar(50) DEFAULT NULL,
+  `applicant_currently_enrolled` enum('Yes','No') DEFAULT NULL,
+  `applicant_university_admission_type` enum('Merit','Self') DEFAULT NULL,
+  `unversity_id` int(11) DEFAULT NULL,
+  `current_enrolled_year_id` int(11) DEFAULT NULL,
+  `passing_degree_year` date DEFAULT NULL,
+  `expense_Of_education` varchar(50) DEFAULT NULL,
+  `applicant_currently_working` enum('Yes','No') DEFAULT NULL,
+  `applicant_how_much_earn_per_month` varchar(50) DEFAULT NULL,
+  `does_applicant_have_skills` enum('Yes','No') DEFAULT NULL,
+  `what_applicant_skills` varchar(50) DEFAULT NULL,
+  `applicant_receive_financial_help` enum('Yes','No') DEFAULT NULL,
+  `how_much_applicant_received_financial_help` varchar(50) DEFAULT NULL,
+  `from_where` varchar(50) DEFAULT NULL,
+  `financial_help_image` text DEFAULT NULL,
+  `total_number_of_family_member` varchar(25) DEFAULT NULL,
+  `total_adults` varchar(25) DEFAULT NULL,
+  `total_childrens` varchar(25) DEFAULT NULL,
+  `total_monthly_family_income` varchar(50) DEFAULT NULL,
+  `how_many_earning_family_members` varchar(25) DEFAULT NULL,
+  `created_at` date DEFAULT NULL,
+  `is_form_submitted` enum('0','1','2') DEFAULT '0',
+  `application_status` enum('0','1','2','3') DEFAULT NULL,
+  `application_comments` longtext DEFAULT NULL,
+  `father_national_id_card` longtext DEFAULT NULL,
+  `income_document` longtext DEFAULT NULL,
+  `nadra_family_registration_certificate` longtext DEFAULT NULL,
+  `is_form_saved` enum('0','1') DEFAULT '0',
+  PRIMARY KEY (`beneficiary_id`),
+  UNIQUE KEY `applicant_cnic` (`applicant_cnic`),
+  UNIQUE KEY `applicant_email` (`applicant_email`),
+  KEY `academic_degree_id` (`academic_degree_id`),
+  KEY `unversity_id` (`unversity_id`),
+  KEY `current_year_id` (`current_enrolled_year_id`),
+  KEY `passing_degree_year_id` (`passing_degree_year`),
+  CONSTRAINT `beneficiary_ibfk_1` FOREIGN KEY (`academic_degree_id`) REFERENCES `academic_degree` (`academic_degree_id`),
+  CONSTRAINT `beneficiary_ibfk_2` FOREIGN KEY (`unversity_id`) REFERENCES `university` (`university_id`),
+  CONSTRAINT `beneficiary_ibfk_3` FOREIGN KEY (`current_enrolled_year_id`) REFERENCES `current_enrolled_year` (`current_enrolled_year_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8mb4</sql_create_table>
+</table>
+<table name="beneficiary_application_status" view="standard">
+<left>1028</left>
+<top>326</top>
+<width>318</width>
+<height>180</height>
+<sql_create_table>CREATE TABLE `beneficiary_application_status` (
+  `beneficiary_application_status_id` int(11) NOT NULL AUTO_INCREMENT,
+  `beneficiary_id` int(11) NOT NULL,
+  `support_start_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `support_end_date` timestamp NULL DEFAULT NULL,
+  `support_amount` int(11) DEFAULT NULL,
+  `support_status` enum('0','1') DEFAULT NULL,
+  PRIMARY KEY (`beneficiary_application_status_id`),
+  KEY `beneficiary_id` (`beneficiary_id`),
+  CONSTRAINT `beneficiary_application_status_ibfk_1` FOREIGN KEY (`beneficiary_id`) REFERENCES `beneficiary` (`beneficiary_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8mb4</sql_create_table>
+</table>
+<table name="current_enrolled_year" view="standard">
+<left>843</left>
+<top>968</top>
+<width>288</width>
+<height>146</height>
+<sql_create_table>CREATE TABLE `current_enrolled_year` (
+  `current_enrolled_year_id` int(11) NOT NULL AUTO_INCREMENT,
+  `enrolled_year` varchar(50) NOT NULL,
+  `created_at` date DEFAULT NULL,
+  `updated_at` date DEFAULT NULL,
+  PRIMARY KEY (`current_enrolled_year_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4</sql_create_table>
+</table>
+<table name="university" view="standard">
+<left>842</left>
+<top>566</top>
+<width>209</width>
+<height>146</height>
+<sql_create_table>CREATE TABLE `university` (
+  `university_id` int(11) NOT NULL AUTO_INCREMENT,
+  `university_name` text DEFAULT NULL,
+  `created_at` date DEFAULT NULL,
+  `updated_at` date DEFAULT NULL,
+  PRIMARY KEY (`university_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4</sql_create_table>
+</table>
+<table name="user" view="standard">
+<left>668</left>
+<top>30</top>
+<width>208</width>
+<height>197</height>
+<sql_create_table>CREATE TABLE `user` (
+  `user_id` int(11) NOT NULL AUTO_INCREMENT,
+  `first_name` varchar(25) NOT NULL,
+  `last_name` varchar(25) NOT NULL,
+  `email` varchar(25) NOT NULL,
+  `password` varchar(25) DEFAULT NULL,
+  `created_at` date DEFAULT NULL,
+  `updated_at` date DEFAULT NULL,
+  PRIMARY KEY (`user_id`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4</sql_create_table>
+</table>
+</tables>
+</canvas>
+</schemadesigner>

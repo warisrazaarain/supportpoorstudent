@@ -5,9 +5,34 @@ header('Cache-Control:no-cache, no-store, must-revalidate');
 header('Pragma:no-cache');
 header('Expires:0');
 
+session_start();
 require_once('../../controller/bll_support_poor_student.php');
 $bll_support_poor_student = new BLL_Beneficiary();
-$result = $bll_support_poor_student->get_all_beneficiary();
+
+$user_id = $_SESSION['user']['user_id'];
+$is_super_admin = $_SESSION['user']['is_super_admin'];
+
+
+if (isset($_REQUEST['from_date']) && isset($_REQUEST['to_date'])) {
+		extract($_REQUEST);
+		$result = $bll_support_poor_student->search_records_from_date_to_date($from_date,$to_date,$user_id,$is_super_admin);
+		$total_applicant_count = mysqli_num_rows($result);
+		$total_count = $bll_support_poor_student->search_total_count_is_form_submitted($from_date,$to_date,$user_id,$is_super_admin);
+	    $total_submitted_count = mysqli_fetch_assoc($total_count);
+}elseif (isset($_REQUEST['application_status'])) {
+
+		$application_status = $_REQUEST['application_status'];
+		$result = $bll_support_poor_student->search_Filter_records($application_status, $user_id, $is_super_admin);
+		$total_applicant_count = mysqli_num_rows($result);
+}
+else{
+	$result = $bll_support_poor_student->get_all_beneficiary($user_id,$is_super_admin);
+	$total_applicant_count = mysqli_num_rows($result);
+	$total_count = $bll_support_poor_student->total_count_is_form_submitted($user_id,$is_super_admin);
+	$total_submitted_count = mysqli_fetch_assoc($total_count);
+}
+
+
 
 ?>
 
@@ -42,65 +67,105 @@ $result = $bll_support_poor_student->get_all_beneficiary();
 			font-size:30px; 
 			font-family: arial; 
 			font-weight: bold;
-			border: 2px solid blue;
+			/*border: 2px solid blue*/;
 			margin-bottom: 5px;
 		}
 	</style>
 </head>
 <body>
 	<div id="heading">
-		HIDAYA SUPPORT POOR STUDENTS SHEET
+		<?php
+			if (isset($from_date) && isset($to_date)) {
+			?>
+				<h1>HIDAYA SUPPORT POOR STUDENTS SHEET <span>(From Date : <?php echo date("d M Y", strtotime($from_date))?>) (To Date : <?php echo date("d M Y", strtotime($to_date));?>)</span></h1>
+				<p style="font-size: 24px;">
+					<?php echo "Total Applicant : ". $total_applicant_count."<br/>"." Total Submitted Request : ".$total_submitted_count['Total_Form_Submitted'];?>
+				</p>
+				<!-- <p style="font-size: 24px;">Search : <span>From Date: ( <?php echo date("d M Y", strtotime($from_date));?> )  
+					To Date: ( <?php echo date("d M Y", strtotime($to_date));?> ) </span>
+				</p> -->		
+			<?php
+			}elseif (isset($_REQUEST['application_status'])) {
+			?>
+				<h1>HIDAYA SUPPORT POOR STUDENTS SHEET</h1>
+				<p style="font-size: 24px;">
+					<?php echo "Total Applicant : ". $total_applicant_count."<br/>"." Total Submitted Request : 0";
+					?>
+				</p>
+			<?php
+				if (isset($_REQUEST['application_status']) && $_REQUEST['application_status'] =='0') {
+						?><p style="font-size: 24px;">Filter :<span> Application Rejected</span></p><?php		
+					}elseif (isset($_REQUEST['application_status']) && $_REQUEST['application_status'] =='1') {
+						?><p style="font-size: 24px;">Filter :<span> Application Approved</span></p><?php
+					}elseif (isset($_REQUEST['application_status']) && $_REQUEST['application_status'] =='2') {
+						?><p style="font-size: 24px;">Filter :<span> Financial Support Started</span></p><?php
+					}elseif (isset($_REQUEST['application_status']) && $_REQUEST['application_status'] =='3') {
+						?><p style="font-size: 24px;">Filter :<span> Financial Support Stopped</span></p><?php
+					}elseif (isset($_REQUEST['application_status']) && $_REQUEST['application_status'] =='') {
+						?><p style="font-size: 24px;">Filter :<span> New Application</span></p><?php
+					}
+			}
+			else{
+				?>
+				   <h1>HIDAYA SUPPORT POOR STUDENTS SHEET</h1>
+				   <p style="font-size: 24px;">
+				   	<?php echo "Total Applicant : ". $total_applicant_count."<br/>"." Total Submitted Request : ".$total_submitted_count['Total_Form_Submitted'];?>
+				   </p>
+				<?php
+			}
+		?>
 	</div>
+	
 	<table class="table" id="beneficiary-table" style="border:1px solid black;">
 				    <thead>
-						<!-- <tr>
-						    <th colspan="34" style="" id="heading">
-						    	HIDAYA SUPPORT POOR STUDENTS SHEET
-						    </th>
-					    </tr> -->
-				        <tr>
-				          <!-- <th scope="col">Applicant picture</th> -->
-				          <th scope="col">Applicant Id</th>
-				          <th scope="col">Applicant FullName</th>
-				          <th scope="col">Gender</th>
-				          <th scope="col">Contact Number</th>
-				          <th scope="col">Email</th>
-				          <th scope="col">DOB</th>
-				          <th scope="col">CNIC</th>
-				          <th scope="col">Current Address</th>
-				          <th scope="col">Permanent Address</th>
-				          <th scope="col">Apply For Stipend</th>
-				          <th scope="col">Eligible For Zakat</th>
-				          <th scope="col">Why</th>
-				          <th scope="col">Is Father Alive</th>
-				          <!-- <th scope="col">Death Certificate</th> -->
-				          <th scope="col">Father Full Name</th>
-				          <th scope="col">Father CNIC</th>
-				          <!-- <th scope="col">Father CNIC Image</th> -->
-				          <th scope="col">Father Occuption</th>
-				          <th scope="col">Is Current Enrolled At University</th>
-				          <th scope="col">Admission Type</th>
-				          <th scope="col">Univeristy</th>
-				          <th scope="col">Degree</th>
-				          <th scope="col">Currently Enrolled Year</th>
-				          <th scope="col">Passing Year</th>
-				          <th scope="col">Education Expenses</th>
-				          <th scope="col">Is Currently Working</th>
-				          <th scope="col">How Much Earn Per Month</th>
-				          <th scope="col">Does Applicant Have Skill</th>
-				          <th scope="col">What Skill</th>
-				          <th scope="col">Does Applicant Recieved Financial Help</th>
-				          <th scope="col">How Much</th>
-				          <th scope="col">From Where</th>
-				          <!-- <th scope="col">Recieved Financial Help Financial Image</th> -->
-				          <th scope="col">Total No Of Family Members</th>
-				          <th scope="col">Adults</th>
-				          <th scope="col">Children Under 18</th>
-				          <th scope="col">Total Family Monthly Income</th>
-				          <th scope="col">How Many Earning Members In The Family</th>
-				        </tr>
-				    </thead>
-				    <tbody>
+		    			<tr>
+		    	          <!-- <th scope="col">Applicant picture</th> -->
+		    	          <th scope="col">Applicant Id</th>
+		    	          <th scope="col">Submission Date</th>
+		    	          <th scope="col">Name of Applicant</th>
+		    	          <th scope="col">Gender</th>
+		    	          <th scope="col">Contact Number</th>
+		    	          <th scope="col">Contact Email</th>
+		    	          <th scope="col">Date of Birth</th>
+		    	          <th scope="col">National ID Card No</th>
+		    	          <th scope="col">Current Address</th>
+		    	          <th scope="col">Permanent Address</th>
+		    	          <th scope="col">Apply For Stipend</th>
+		    	          <th scope="col">(Muslim Only) Is The Applicant Eligible To Receive Zakat</th>
+		    	          <th scope="col">Why</th>
+		    	          <th scope="col">Is Father Alive</th>
+		    	          <!-- <th scope="col">Death Certificate</th> -->
+		    	          <th scope="col">Father Name</th>
+		    	          <th scope="col">Father National ID Card No</th>
+		    	          <!-- <th scope="col">Father CNIC Image</th> -->
+		    	          <th scope="col">Father Occuption</th>
+		    	          <th scope="col">Currently Enrolled At University</th>
+		    	          <th scope="col">University Admission</th>
+		    	          <th scope="col">In Which University</th>
+		    	          <th scope="col">Highest Academic Degree</th>
+		    	          <th scope="col">In Which Year Currently Studying</th>
+		    	          <th scope="col">In Which Month And Year The Current Degree Will Be Completed</th>
+		    	          <th scope="col">Total yearly educational expenses</th>
+		    	          <th scope="col">Currently Working</th>
+		    	          <th scope="col">If Yes, How Much Money Earn Per Month</th>
+		    	          <th scope="col">Have Any Skills Or Completed Any Skilful Training</th>
+		    	          <th scope="col">If Yes, What</th>
+		    	          <th scope="col">Received Any Financial Help From Other Sources Besides Parents Such As Government Or University, In Last 2 Years</th>
+		    	          <th scope="col">If yes, how much</th>
+		    	          <th scope="col">From Where</th>
+		    	          <!-- <th scope="col">Recieved Financial Help Financial Image</th> -->
+		    	          <th scope="col">Total Number of Family Members</th>
+		    	          <th scope="col">Adults</th>
+		    	          <th scope="col">Children Under 18</th>
+		    	          <th scope="col">Total Monthly Family Income</th>
+		    	          <th scope="col">How Many Earning Members In The Family</th>
+		    	          <th scope="col">Bank Name</th>
+		    	          <th scope="col">Bank Branch Name</th>
+		    	          <th scope="col">Bank Account Title</th>
+		    	          <th scope="col">Bank Account Number</th>
+		    	        </tr>
+		    	    </thead>
+		    	    <tbody>
 						<?php
 							if($result->num_rows)
 							{
@@ -116,7 +181,37 @@ $result = $bll_support_poor_student->get_all_beneficiary();
 											<?php echo $beneficiary_id;  ?> 
 										</td>
 										<td>
-											<?php echo $applicant_first_name." ".$applicant_middle_name." ".$applicant_last_name;  ?> 
+											<?php echo date("d M Y", strtotime($created_at));  ?> 
+										</td>
+										<td>
+											<?php echo $applicant_first_name." ".$applicant_middle_name." ".$applicant_last_name;  ?>
+											<?php 
+												if($is_form_submitted == '1'): 
+											?>
+												<!-- <p class="mt-1">
+													<b><a target="_blank" href="view_beneficiary_status.php?beneficiary_id=<?php //echo $beneficiary_id; ?>" class=" text-decoration-none applicant-status">Manage Application</a></b>
+												</p> -->
+												<!--  Support Status -->
+												<p class="mt-1">
+												<?php if($application_status == '0'){  ?>
+													 <b class="text-light badge bg-danger text-decoration-none">Application Rejected</b>
+												<?php }elseif($application_status == '1'){?>
+													 <b class="text-light badge bg-success text-decoration-none">Application Approved</b>
+													<?php }elseif($application_status == '2'){?>
+														<b class="text-light badge bg-success text-decoration-none  p-2">Financial Support Started</b>
+													<?php }elseif($application_status == '3'){?>
+														<b class="text-light badge bg-danger text-decoration-none p-2">Financial Support Stopped</b>
+												<?php }else{  ?>
+													 <b class="text-light badge bg-secondary text-decoration-none">New Application</b>
+												<?php }  ?>
+												</p>
+												<!--  Support Status -->
+											<?php 	
+												elseif($is_form_submitted == '0'): ?>	
+													<p class="mt-1">
+														<b class="text-light badge bg-primary text-decoration-none">Form Request Approved</b>
+													</p>
+											<?php endif; ?>
 										</td>
 										<td>
 											<?php echo $applicant_gender;  ?> 
@@ -128,7 +223,7 @@ $result = $bll_support_poor_student->get_all_beneficiary();
 											<?php echo $applicant_email;  ?> 
 										</td>
 										<td>
-											<?php echo date("d-M-Y", strtotime($applicant_date_of_birth));  ?> 
+											<?php echo date("d M Y", strtotime($applicant_date_of_birth));  ?> 
 										</td>
 										<td>
 											<?php echo $applicant_cnic;  ?> 
@@ -226,6 +321,18 @@ $result = $bll_support_poor_student->get_all_beneficiary();
 										<td>
 											<?php echo $how_many_earning_family_members;  ?> 
 										</td>
+										<td>
+											<?php echo $bank_name;  ?> 
+										</td>
+										<td>
+											<?php echo $bank_branch_name;  ?> 
+										</td>
+										<td>
+											<?php echo $bank_account_title;  ?> 
+										</td>
+										<td>
+											<?php echo $bank_account_number;  ?> 
+										</td>
 									</tr>		
 								<?php
 								}
@@ -238,7 +345,7 @@ $result = $bll_support_poor_student->get_all_beneficiary();
 							}
 						?>
 					</tbody>
-				</table>
+	</table>
 
 </body>
 </html>				

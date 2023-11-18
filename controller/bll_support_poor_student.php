@@ -3,7 +3,16 @@
 
 	class BLL_Beneficiary extends Support_Poor_Student
 	{
-		protected $first_name     						= NULL; 
+        protected $is_father_alive                      = NULL;
+        protected $applicant_father_death_certificate   = NULL;
+        protected $father_cnic                          = NULL;
+        protected $father_first_name                    = NULL; 
+        protected $father_middle_name                   = NULL; 
+        protected $father_last_name                     = NULL; 
+        protected $father_occupation                    = NULL; 
+		
+        protected $beneficiary_id     					= NULL; 
+        protected $first_name                           = NULL; 
     	protected $middle_name 							= NULL; 
     	protected $last_name 							= NULL; 
     	protected $gender 								= NULL;
@@ -21,14 +30,7 @@
     	protected $stipend_for_non_muslim 				= NULL;
     	protected $eligible_for_zakat 					= NULL;
     	protected $reason_for_zakat 					= NULL; 
-    	protected $is_father_alive 						= NULL;
-    	protected $applicant_father_death_certificate 	= NULL;
-    	protected $father_cnic 							= NULL;
-    	 
-    	protected $father_first_name 					= NULL; 
-    	protected $father_middle_name 					= NULL; 
-    	protected $father_last_name 					= NULL; 
-    	protected $father_occupation 					= NULL; 
+    	
     	protected $is_currently_enrolled_in_uni 		= NULL;
     	protected $applicant_university_admission 		= NULL;
     	protected $univerity 							= NULL; 
@@ -47,13 +49,24 @@
     	protected $adult 								= NULL; 
     	protected $children_under_age 					= NULL; 
     	protected $total_family_monthly_income 			= NULL; 
-    	protected $how_many_earning_members 			= NULL; 
+    	protected $how_many_earning_members 			= NULL;
+
+        protected $nadra_family_registration_certificate     = NULL;
+        protected $income_document                           = NULL;
+        protected $father_national_id_card                   = NULL;
+        protected $bank_name                                 = NULL;
+        protected $bank_branch_name                          = NULL;
+        protected $bank_account_title                        = NULL;
+        protected $bank_account_number                       = NULL;
+        protected $hidden_value                              = NULL;
+
+
         protected $beneficiary_data                     = array(); 
     	
         public function get_beneficiary_data()
         {   
             $data = array(
-
+                    "beneficiary_id"                    => $this->get_beneficiary_id(),
                     "first_name"                        => $this->get_first_name(),
                     "middle_name"                       => $this->get_middle_name(),
                     "last_name"                         => $this->get_last_name(),
@@ -91,7 +104,12 @@
                     "adult"                             => $this->get_adult(),
                     "children_under_age"                => $this->get_children_under_age(),
                     "total_family_monthly_income"       => $this->get_total_family_monthly_income(),
-                    "how_many_earning_members"          => $this->get_how_many_earning_members()
+                    "how_many_earning_members"          => $this->get_how_many_earning_members(),
+                    "bank_name"                         => $this->get_bank_name(),
+                    "bank_branch_name"                  => $this->get_bank_branch_name(),
+                    "bank_account_title"                => $this->get_bank_account_title(),
+                    "bank_account_number"               => $this->get_bank_account_number(),
+                    "hidden_value"                      => $this->get_hidden_value()
                 );
 
             $this->beneficiary_data = $data;
@@ -99,12 +117,19 @@
             return $this->beneficiary_data;
         }
 
-        /*public function get_beneficiary_data()
+        
+        public function set_beneficiary_id($beneficiary_id)
         {
-            return $this->beneficiary_data;
-        }*/
+            $this->beneficiary_id = $beneficiary_id;
+        }
 
-		public function set_first_name($first_name)
+        public function get_beneficiary_id()
+        {
+            return $this->beneficiary_id;
+        }
+
+
+        public function set_first_name($first_name)
         {
             $this->first_name = $first_name;
         }
@@ -392,7 +417,7 @@
         {
             return $this->degree_completed_year;
         }
-        public function set_degree_yearly_expenses($degree_yearly_expenses=null)
+        public function set_degree_yearly_expenses($degree_yearly_expenses)
         {
             $this->degree_yearly_expenses = $degree_yearly_expenses;
         }
@@ -517,6 +542,88 @@
         public function get_how_many_earning_members()
         {
             return $this->how_many_earning_members;
+        }
+
+
+        public function set_nadra_family_registration_certificate($nadra_family_registration_certificate)
+        {
+            $this->nadra_family_registration_certificate = $nadra_family_registration_certificate;
+        }
+
+        public function get_nadra_family_registration_certificate()
+        {
+            return $this->nadra_family_registration_certificate;
+        }
+        
+        public function set_income_document($income_document)
+        {
+            $this->income_document = $income_document;
+        }
+        
+        public function get_income_document()
+        {
+            return $this->income_document;
+        }
+
+        public function set_father_national_id_card($father_national_id_card)
+        {
+            $this->father_national_id_card = $father_national_id_card;
+        }
+        
+        public function get_father_national_id_card()
+        {
+            return $this->father_national_id_card;
+        }
+
+          public function set_bank_name($bank_name)
+        {
+           $this->bank_name = mysqli_real_escape_string($this->connection,$bank_name);
+        }
+
+        public function get_bank_name()
+        {
+            return $this->bank_name;
+        }
+
+          public function set_bank_branch_name($bank_branch_name)
+        {
+            $this->bank_branch_name = mysqli_real_escape_string($this->connection,$bank_branch_name);
+        }
+
+        public function get_bank_branch_name()
+        {
+            return $this->bank_branch_name;
+        }
+
+          public function set_bank_account_title($bank_account_title)
+        {
+            $this->bank_account_title = mysqli_real_escape_string($this->connection,$bank_account_title);
+        }
+
+        public function get_bank_account_title()
+        {
+            return $this->bank_account_title;
+        }
+
+          public function set_bank_account_number($bank_account_number)
+        {
+            $this->bank_account_number = mysqli_real_escape_string($this->connection,$bank_account_number);
+        }
+
+        public function get_bank_account_number()
+        {
+            return $this->bank_account_number;
+        }
+
+        public function set_hidden_value($hidden_value)
+        {
+            $this->hidden_value = $hidden_value;
+        }
+        
+        public function get_hidden_value()
+        {
+            return $this->hidden_value;
+            
         }
         		
 	}

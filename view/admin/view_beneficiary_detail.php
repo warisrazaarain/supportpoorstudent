@@ -38,36 +38,14 @@
 	$result2 = $beneficiary->get_all_beneficiary_degree_attachments($beneficiary_id);
 
 	General::site_header();
+	General::site_logo();
 
+	General::admin_navbar();  
 
-?>
-	
-	<nav class="navbar navbar-expand-lg bg-primary border border-dark">
-	  <div class="container-fluid text-light">
-	    <a class="navbar-brand text-light" href="index.php"><?php  echo General::site_title(); ?></a>
-	    <ul class="nav navbar-nav navbar-right">
-	    	<li class="align-content:center">
-	        <a class="btn btn-danger text-light" href="logout.php" >Logout</a>
-	    		
-	    	</li>
-	    </ul>
-	  </div>
-	</nav>
-
-	<div class="container-fluid">
-		
-		<div class="row mt-5">
-			<div class="col-md-12"><h3 class="text-danger">Welcome: <b class="text-primary"><?php echo ucwords($_SESSION['user']['first_name']." ".$_SESSION['user']['last_name']); ?></b> </h3></div>
-		</div>
-
-		<div class="row mt-5">
-		</div>
-	</div>
-		<?php
 			    
-			$record = mysqli_fetch_assoc($result);
-			$forms->update_beneficiary_form($record,$result2,$beneficiary_id); ?>
-<?php 
+	$record = mysqli_fetch_assoc($result);
+	$forms->update_beneficiary_form($record,$result2,$beneficiary_id);
+ 
 	General::site_footer();
 ?>
 
@@ -162,90 +140,353 @@
 	        });
     		/*Show Hide Financial Box: If Applicant Recieved Financial Help Yes:End*/
 
+	    /*Validation For Fathers Related Field: Start*/
+
+	        	var flag_2 = true;     //father cnic flag
+	        	var flag_3 = true;    //first name flag
+	        	var flag_4 = true;   //last name flag
+	        	var flag_5 = true;  //Occupation flag
+	        	var flag_6 = true;  //middle name flag
+
+	        	function flag_status(){
+
+	        			if (flag_2 && flag_3 && flag_4 && flag_5 && flag_6){
+	        				// alert(Count+" "+father_middle_name_flag);
+	        				$("#nextBtn-update").css('display','block');
+	        				$("#nextBtn-update").prop('disabled',false);
+	        				$("#nextBtn-update").removeClass('bg-secondary');
+	        				$("#nav-personal-info-update-tab").prop('disabled', false);
+
+	        			}else{
+	        					// $("#nextBtn-update").css('display','none');
+	        					$("#nextBtn-update").prop('disabled',true);
+	        					$("#nextBtn-update").addClass('bg-secondary');
+	        					$("#nav-personal-info-update-tab").prop('disabled',true);
+	        			}
+	        	}
+
+   
+	    	var father_alpha_pattern  = /^[A-z]{3,}$/; //ali 
+	        var cnic_pattern  		  = /^\d{5}[0-9]{7}\d{1}$/;//4130312345671
+
+	            /*Applicant Father`s CNIC Numbers Validation:Start*/
+	        	    	 $(document).on("blur","#father_nic",function(){
+	        	    	 	// alert("ok");
+	        	    		var father_cnic = $('input[name=father_cnic]').val();
+	        	    	    // var flag_2 = true;
+	        	    	    	if (father_cnic == "") {
+	        	    	    		flag_2 = false;
+	        	    	    		$('input[name=father_cnic]').addClass('is-invalid');
+	        	    	        	$('#error-father-cnic').html('This field is required.');
+	        	    	        	flag_status();
+	        	    	        	
+	        	    	        
+	        	    	        }else{
+	        	    	    		$('input[name=father_cnic]').removeClass('is-invalid').addClass('is-valid');
+	        	    	    		
+	        	    	        	if (cnic_pattern.test(father_cnic) == false) {
+	        	    	        		flag_2 = false;
+	        	    	        		flag_status();
+	        	    	    			$('input[name=father_cnic]').removeClass('is-valid').addClass('is-invalid');
+	        	    	        		$('#error-father-cnic').html('CNIC Numbers must be like eg: 4130312345671');
+	        	    	        			
+	        	    	        	}else{
+	        	    	        		flag_2 = true;
+	        	    	        		flag_status();
+	        	    	        	}   
+	        	    	    	}
+	        	    	});
+
+	        	/*Applicant Father`s CNIC Numbers Validation:End*/
+
+	        	/*Applicant Father`s FirstName Validation:Start*/
+
+	        	    	 $(document).on("blur","#f_first_name",function(){
+	        	    	 	
+	        	    	 	var father_first_name = $('input[name=father_first_name]').val();
+
+	        	    	 		if (father_first_name == "") {
+	        	    	 			flag_3 = false;
+	        	    	 			flag_status();
+	        	    	 			$('input[name=father_first_name]').addClass('is-invalid').removeClass('bottom-margin');
+	        	    	 	    	$('#error-father-first-name').html('This field is required.');
+	        	    	 	    }else{
+	        	    	 			$('input[name=father_first_name]').removeClass('is-invalid').addClass('is-valid bottom-margin');
+	        	    	 	    	if (father_alpha_pattern.test(father_first_name) == false) {
+	        	    	 	    		flag_3 = false;
+	        	    	 	    		flag_status();
+	        	    	 				$('input[name=father_first_name]').removeClass('is-valid bottom-margin').addClass('is-invalid');
+	        	    	 	    		$('#error-father-first-name').html('First Name must be like eg: Ali ...');
+	        	    	 	    	}else{
+	        	    	 	    		 flag_3 = true;
+	        	    	 	    		 flag_status();
+	        	    	 	    	}   
+	        	    	 		}
+	        	    	});
+
+	        	/*Applicant Father`s FirstName Validation:End*/
+
+	        	/*Applicant Father`s MiddleName Validation:Start*/
+	        	    	 $(document).on("blur","#f_middle_name",function(){
+	        	    	 	
+	        	    	 	var father_middle_name = $('input[name=father_middle_name]').val();
+
+	        	    	 	  if (father_middle_name != "") {
+	        	    	 	  	father_middle_name_flag = true;
+	        	    	 	  	$('#error-father-middle-name').html('');
+
+	        	    	 	  	if (father_alpha_pattern.test(father_middle_name) == false) {
+	        	    	 	  		flag_6 = false;
+	        	    	 	  		flag_status();
+	        	    	 	  		$('input[name=father_middle_name]').addClass('is-invalid').removeClass('bottom-margin');;
+	        	    	 	  		$('#error-father-middle-name').html('Middle Name must be like eg: Ahmed ...');
+	        	    	 	  	}else{
+	        	    	 	  		$('input[name=father_middle_name]').removeClass('is-invalid').addClass('is-valid bottom-margin');
+	        	    	 	  		flag_6 = true;
+	        	    	 	  		flag_status();
+	        	    	 	  	}
+	        	    	 	  }else{
+	        	    	 	  	flag_6 = true;
+	        	    	 	  		flag_status();
+	        	    	 	  	$('input[name=father_middle_name]').removeClass('is-invalid is-valid').addClass('bottom-margin');
+	        	    	 	  }	
+	        	    	});
+
+	        	/*Applicant Father`s MiddleName Validation:End*/
+
+	        	/*Applicant Father`s LastName Validation:Start*/
+	        	    	
+	        	    	 $(document).on("blur","#f_last_name",function(){
+
+	        	    	 	var father_last_name = $('input[name=father_last_name]').val();
+
+	        	    	 	 if (father_last_name == "") {
+	        	    	 	  			flag_4 = false;
+	        	    	 	  			flag_status();
+	        	    	 	  			$('input[name=father_last_name]').addClass('is-invalid').removeClass('bottom-margin');
+	        	    	 	  	    	$('#error-father-last-name').html('This field is required.');
+	        	    	 	  	    
+	        	    	 	  	}else{
+	        	    	 	  			$('input[name=father_last_name]').removeClass('is-invalid').addClass('is-valid bottom-margin');
+	        	    	 	  	    if (father_alpha_pattern.test(father_last_name) == false) {
+	        	    	 	  	    		flag_4 = false;
+	        	    	 	  	    		flag_status();
+	        	    	 	  				$('input[name=father_last_name]').removeClass('is-valid bottom-margin').addClass('is-invalid');
+	        	    	 	  	    		$('#error-father-last-name').html('Last Name must be like eg: Khan ...');
+	        	    	 	  	    }else{
+
+	        	    	 	  	    	flag_4 = true;
+	        	    	 	  	    	flag_status();
+	        	    	 	  	    }   
+	        	    	 	     }	
+	        	    	    });
+
+	        	/*Applicant Father`s LastName Validation:End*/
+
+	        	/*Applicant Father Occupation Validation:Start*/
+
+	        	    	 $(document).on("blur","#father_occupations",function(){
+
+	        	    	 	var father_occupation = $('input[name=father_occupation]').val();
+
+	        	    	 	if (father_occupation == "") {
+	        	    	 	  			flag_5 = false;
+	        	    	 	  			flag_status();
+	        	    	 	  			$('input[name=father_occupation]').addClass('is-invalid');
+	        	    	 	  	    	$('#error-father-occupation').html('This field is required.');
+	        	    	 	  	    
+	        	    	 	  	}else{
+	        	    	 	  			$('input[name=father_occupation]').removeClass('is-invalid').addClass('is-valid');
+	        	    	 	  			flag_5 = true;
+	        	    	 	  			flag_status();
+	        	    	 	  			// Count++;
+	        	    	 	  			// if (Count == 5 && father_middle_name_flag){
+
+	        	    	 	  			// 	$("#nextBtn").css('display', 'block');
+	        	    	 	  			// }else{
+	        	    	 	  			// 	$("#nextBtn").css('display', 'none');
+	        	    	 	  			// }
+
+	        	    	 	  	    }
+	        	    	});
+	        	    	
+	        	/*Applicant Father Occupation Validation:End*/
+
+
+	    /*Validation For Fathers Related Field: End*/
+
+
+       $('.is_father_alive').on('click',function(){
+
+	// alert($(this).val());
+			if ($(this).val() == 'Yes') {
+				$('#error-father-alive').html('<b>Hidaya Trust offers the Support Poor Student project only for those applicants who are orphans.</b>');
+				$('#error-father-alive').show();
+				// $("#nav-personal-info-tab").prop('disabled', true);
+				// $("#nextBtn").css('display', 'none');
+				// $('#death-certificate').hide();	
+
+				/*--- This code is for beneficiary update form tabs ---*/
+					$(".second_link").prop('disabled', true);
+					$("#nextBtn-update").css('display', 'none');
+					$(".death-certificate-image").hide();
+					$("#father_nic").hide();
+					$("#f_first_name").hide();
+					$("#f_middle_name").hide();
+					$("#f_last_name").hide();
+					$("#father_occupations").hide();
+					$("#f_name_label").hide();
+			}else{
+
+				// $('#error-father-alive').hide();
+				// $('#death-certificate').show();	
+
+				/*--- This code is for beneficiary update form tabs ---*/
+					$(".second_link").prop('disabled', false);
+					$("#nextBtn-update").css('display', 'block');
+					$(".death-certificate-image").show();
+					$("#father_nic").show();
+					$("#f_first_name").show();
+					$("#f_middle_name").show();
+					$("#f_last_name").show();
+					$("#father_occupations").show();
+					$("#f_name_label").show();
+					$("#error-father-alive").hide();
+					flag_status();
+			}
+		});
+
+       /* -----<< Applicant Update Form Tabs Code - Start >>-----*/
+	/*--- This code is for beneficiary update form`s Next Button & Second Tab  ---*/
+		$(document).on("click",'#nav-personal-info-update-tab,#nextBtn-update',function(){
+			    			
+			$('#first_tab').hide();
+			$('#second_tab').show();
+			$('#nav-father-alive-update-tab').removeClass('active');
+			$('#nav-father-alive-update').removeClass('show active');
+
+			$('#nav-personal-info-update-tab').addClass('active');
+			$('#nav-personal-info-update').addClass('show active');
+		});
+	/*--- This code is for beneficiary update form`s First Tab Only  ---*/
+		$(document).on("click","#nav-father-alive-update-tab",function(){
+			    			
+			$('#second_tab').hide();
+			$('#first_tab').show();
+		});
+
+	/*-----<< Applicant Father`s Death Certificate Scanned Image Viewer Plugin For Admin View detail page >>-----*/
+            lc_lightbox('.elem2', {
+                wrap_class: 'lcl_fade_oc',
+                gallery : false,
+                thumb_attr: 'data-lcl-thumb',
+                skin: 'dark',
+            });
+    /*-----<< Applicant Other Files Image Viewer Plugin For Admin View detail page >>-----*/
+            lc_lightbox('.elem3', {
+                wrap_class: 'lcl_fade_oc',
+                gallery : true,
+                thumb_attr: 'data-lcl-thumb',
+                skin: 'dark',
+            });        
+
+
+    		
     		/*Checked Email Already Exist In DB:Start*/
-	    	/*	$(document).on("blur","#email",function(){
-	    			alert("ok");
+	    		$(document).on("blur","#email",function(){
 	    			var cnic = $("#cnic").val()
 	                var email = $(this).val();
-	                
-	                checked_email(email);
+	                var id = $("input[name='beneficiary_id']").val()
+	                // alert(id);
+
+	                checked_email(email,id);
 	                if(cnic != ""){
-	                	checked_cnic(cnic);
+	                	checked_cnic(cnic,id);
 	                }
 	                
-				});*/
+				});
     		/*Checked Email Already Exist In DB:End*/
 
     		/*Checked Applicant CNIC Already Exist In DB:Start*/
-	    /*		$(document).on("blur","#cnic",function(){
+	    		$(document).on("blur","#cnic",function(){
 	    			var email = $("#email").val();
 	    			var cnic = $(this).val();
+	                var id = $("input[name='beneficiary_id']").val()
+	                // alert(id);
 	                
-	                checked_cnic(cnic);
+	                checked_cnic(cnic,id);
 	                if(email != ""){
-	                	checked_email(email);
+	                	checked_email(email,id);
 	                }
 
-				});*/
+				});
     		/*Checked Applicant CNIC Already Exist In DB:End*/
     	});
 
-/*		function checked_email(email=null){
+	function checked_email(email=null, id= null){
 			
             var email_pattern = /^[a-z]{2,}\w*[@]{1}[a-z]{2,}[.]{1}[a-z]{2,6}$/;//ali9@yahoo.pk
                 	
         	$('input[name=email]').removeClass('is-invalid').addClass('is-valid');
+	    	$('#email_already_exist').hide();
+
 	    	if (email_pattern.test(email) == false) {
 	    		flag = false;
 				$('input[name=email]').removeClass('is-valid').addClass('is-invalid');
 	    		$('#error-email').html('Email must be like eg: ali9@yahoo.pk');
 	    	}else{
-	    		$('button[name=submit]').attr('disabled', false);
+	    		$('button[name=update]').attr('disabled', false);
         		$('input[name=email]').removeClass('is-invalid').addClass('is-valid');
         		$('#error-email').html("");
 	    		
         		$.ajax({
                     type: 'POST',
-                    url: 'beneficiary_form_process.php',
-                    data: {email:email,action:'checked_email' },
+                    url: 'update_beneficiary_record.php',
+                    data: {applicant_id:id,email:email,action:'checked_email' },
                     success: function(responseText, statusText, HTTPRequest) {
+                        
                         if(Number(responseText) == "1"){
-                        	$('button[name=submit]').attr('disabled', true);
+                        	$('button[name=update]').attr('disabled', true);
         					$('input[name=email]').addClass('is-invalid');
         					$('#error-email').html("This email is already exist.");
+                        	$('#email_already_exist').show();
                         }
                     }
         		});
         	}
-		}*/
+		}
 
-/*		function checked_cnic(cnic = null){
+		function checked_cnic(cnic = null , id = null){
 			var cnic_pattern  = /^\d{5}[0-9]{7}\d{1}$/;//4130312345671
-	                    	
+
         	$('input[name=applicant_cnic]').removeClass('is-invalid').addClass('is-valid');
+            $('#cnic_already_exist').hide();
+
 	    	if (cnic_pattern.test(cnic) == false) {
 	    		flag = false;
 				$('input[name=applicant_cnic]').removeClass('is-valid').addClass('is-invalid');
 	    		$('#error-cnic').html('CNIC Numbers must be like eg: 4130312345671');
 	    	}else{
-	    		$('button[name=submit]').attr('disabled', false);
-        		$('input[name=email]').removeClass('is-invalid').addClass('is-valid');
+	    		$('button[name=update]').attr('disabled', false);
+        		//$('input[name=email]').removeClass('is-invalid').addClass('is-valid');
         		$('#error-cnic').html("");
 	    		
         		$.ajax({
                     type: 'POST',
-                    url: 'beneficiary_form_process.php',
-                    data: {applicant_cnic:cnic,action:'checked_cnic' },
+                    url: 'update_beneficiary_record.php',
+                    data: {applicant_id:id,applicant_cnic:cnic,action:'checked_cnic' },
                     success: function(responseText, statusText, HTTPRequest) {
-                        
+                        // console.log(responseText);
                     	if(Number(responseText) == 1){
-                        	$('button[name=submit]').attr('disabled', true);
+                        	$('button[name=update]').attr('disabled', true);
         					$('input[name=applicant_cnic]').addClass('is-invalid');
         					$('#error-cnic').html("This cnic is already exist.");
+                        	$('#cnic_already_exist').show();
+
                         }
                     }
         		});
         	}
-		}*/
+		}
 	</script>
     <!-- Internal Script Code:End -->

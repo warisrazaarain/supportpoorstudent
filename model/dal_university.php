@@ -9,6 +9,7 @@
 
 		public function __construct()
 		{
+			mysqli_report(false);
 			$this->connection = mysqli_connect($this->hostname, $this->username, $this->password, $this->database);
 
 			if(mysqli_connect_errno())
